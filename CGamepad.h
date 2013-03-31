@@ -1,60 +1,55 @@
 #ifndef __CJOYSTICK_H
 #define __CJOYSTICK_H
 
-#define NOT_AVAILABLE 255
-
 #include <Arduino.h>
-
-#ifdef ESPLORA
 #include <Esplora.h>
-#endif
 
+#define FEATURE_NOT_AVAILABLE 255
+#define BUTTON_PRESSED  true
+#define BUTTON_RELEASED false
 
 class Gamepad
   {
   public:
-    typedef char sbyte;
-
-    typedef struct 
+    struct gamepad_descriptor_t
       {
-      byte nXAxisPin;
-      byte nYAxisPin;
-      int  anXAxisLimits[2];
-      int  anYAxisLimits[2];
+      byte nJoystickXAxisPin;               // The pin to which the X-axis is connected
+      byte nJoystickYAxisPin;               // The pin to which the Y-axis is connected
+      int  anJoystickXAxisRange[2];         // The range of input values of the joysticks x-axis.
+      int  anJoystickYAxisRange[2];         // The range of input values of the joysticks y-axis
+      char anJoystickCalibrationData[2];    // The calibration data for the joystick
+      char nJoystickSensitivity;            // The sensitivity of the joystick
       
-      byte nButton1Pin;
-      byte nButton2Pin;
-      byte nButton3Pin;
-      byte nButton4Pin;
-      boolean bButtonActiveState;
-      } gamepad_descriptor_t;
+      byte* anButtonPins;                   // The pins to which the buttons are connected to
+      byte  nButtonsCount;                  // The number of buttons on the gamepad
+      bool  bButtonActiveState;             // The states that singals a pushed button (LOW or HIGH)
+      
+      byte* anAccelerometerAxisPins;        // The pin to wich the X-axis of the accelerometer is connected
+      byte nAccelerometerAxisCount;         // The pin to wich the Y-axis of the accelerometer is connected
+      int* anAccelerometerCalibrationData;  // The calibration data for the accellerometer
+      };
 
   protected:
-    sbyte m_nXPosition;  // The current X position of the joystick (calibrated)
-    sbyte m_nYPosition;  // The current Y position of the joystick (calibrated)
-    sbyte m_nXOffset;    // The calibration offset from the ideal center of the X axis
-    sbyte m_nYOffset;    // The calibration offset from the ideal center of the Y axis
-    
-    int m_anXLimits[2];  // The minimum and maximum reading of the X axis
-    int m_anYLimits[2];  // The minimum and maximum reading of the Y axis
-    
-    boolean m_bLeftMouseButtonIsClicked;   // Is the left mouse button clicked?
-    boolean m_bRightMouseButtonIsClicked;  // Is the right mouse button clicked?
-    boolean m_bMouseButtonActiveState;     // The state that signals a pushed button (LOW of HIGH)
+    gamepad_descriptor_t* m_pstDescriptor;  // The descriptor for the gamepad
+
+    char m_nXPosition;                      // The current calibrated and scaled X position of the joystick
+    char m_nYPosition;                      // The current calibrated and scaled Y position of the joystick
+
+    bool*  m_abButtonStates;                // The states of the connected buttons
     
   protected:
-    Gamepad(Gamepad& roGamepad);  // No copy construction
-    Gamepad();  // No default construction
-    
-    void Update(); // The internal updating routine
+    Gamepad(Gamepad& roGamepad);  // No copy constructor.
+    void Update();                // The internal updating routine that gets called periodically.
   
   public:
-    Gamepad(byte nXAxisPin, byte nYAxisPin, int anXLimits[2], int anYLimits[2], byte nLeftMouseButtonPin, byte nRightMouseButtonPin, boolean nMouseButtonActiveState);
-    
-    byte* GetPostions();
+    Gamepad();                                                         // Default constructor construct an instance for use with the Arduino Esplora.
+    Gamepad(gamepad_descriptor_t* stDescriptor);                       // This constructor constructs an instance using the descriptor provided.
 
-    boolean LeftMouseButtonIsDown() { return m_bLeftMouseButtonIsClicked; }
-    boolean RightMouseButtonIsDown() { return m_bRightMouseButtonIsClicked; }
+    byte* GetPostions();                                               // Get an array with two elements representing the X and Y positions of the joystick.
+    bool* GetButtonStates(int& nSize);                                 // Get an array with nSize elements representing the states of the buttons.
+
+    static void StoreDescriptor(gamepad_descriptor_t* pstDescriptor);  // Store a descriptor in EEPROM
+    static gamepad_descriptor_t* LoadDescriptor();                     // Load a descriptor from EEPROM
   };
 
 #endif
