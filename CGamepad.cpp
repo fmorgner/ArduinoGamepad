@@ -4,17 +4,15 @@ Gamepad::Gamepad(gamepad_descriptor_t* pstDescriptor) : m_pstDescriptor(pstDescr
   {
   if(pstDescriptor == NULL)
     return;
-    
-  int nXBuffer = 0, nYBuffer = 0;
-  
+
   for(byte nIteration = 0; nIteration < 8; ++nIteration)
     {
-    nXBuffer += analogRead(m_pstDescriptor->nJoystickXAxisPin);
-    nYBuffer += analogRead(m_pstDescriptor->nJoystickYAxisPin);
+    m_pstDescriptor->anJoystickCalibrationData[0] += analogRead(m_pstDescriptor->nJoystickXAxisPin);
+    m_pstDescriptor->anJoystickCalibrationData[1] += analogRead(m_pstDescriptor->nJoystickYAxisPin);
     }
   
-  m_pstDescriptor->anJoystickCalibrationData[0] = (nXBuffer >> 3);
-  m_pstDescriptor->anJoystickCalibrationData[1] = (nYBuffer >> 3);
+  m_pstDescriptor->anJoystickCalibrationData[0] >>= 3;
+  m_pstDescriptor->anJoystickCalibrationData[1] >>= 3;
   
   if(m_pstDescriptor->nButtonsCount && m_pstDescriptor->nButtonsCount != FEATURE_NOT_AVAILABLE)
     {
@@ -66,5 +64,5 @@ void Gamepad::StoreDescriptor(gamepad_descriptor_t* pstDescriptor)
 
 gamepad_descriptor_t* Gamepad::LoadDescriptor()
   {
-  
+  return NULL;
   }
