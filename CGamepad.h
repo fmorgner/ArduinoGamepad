@@ -8,27 +8,26 @@
 #define BUTTON_PRESSED  true
 #define BUTTON_RELEASED false
 
+struct gamepad_descriptor_t
+    {
+    byte nJoystickXAxisPin;               // The pin to which the X-axis is connected
+    byte nJoystickYAxisPin;               // The pin to which the Y-axis is connected
+    int  anJoystickXAxisRange[2];         // The range of input values of the joysticks x-axis.
+    int  anJoystickYAxisRange[2];         // The range of input values of the joysticks y-axis
+    int  anJoystickCalibrationData[2];    // The calibration data for the joystick
+    char nJoystickSensitivity;            // The sensitivity of the joystick
+
+    byte* anButtonPins;                   // The pins to which the buttons are connected to
+    byte  nButtonsCount;                  // The number of buttons on the gamepad
+    bool  bButtonActiveState;             // The states that singals a pushed button (LOW or HIGH)
+
+    byte* anAccelerometerAxisPins;        // The pin to wich the X-axis of the accelerometer is connected
+    byte nAccelerometerAxisCount;         // The pin to wich the Y-axis of the accelerometer is connected
+    int* anAccelerometerCalibrationData;  // The calibration data for the accellerometer
+    };
+
 class Gamepad
   {
-  public:
-    struct gamepad_descriptor_t
-      {
-      byte nJoystickXAxisPin;               // The pin to which the X-axis is connected
-      byte nJoystickYAxisPin;               // The pin to which the Y-axis is connected
-      int  anJoystickXAxisRange[2];         // The range of input values of the joysticks x-axis.
-      int  anJoystickYAxisRange[2];         // The range of input values of the joysticks y-axis
-      char anJoystickCalibrationData[2];    // The calibration data for the joystick
-      char nJoystickSensitivity;            // The sensitivity of the joystick
-      
-      byte* anButtonPins;                   // The pins to which the buttons are connected to
-      byte  nButtonsCount;                  // The number of buttons on the gamepad
-      bool  bButtonActiveState;             // The states that singals a pushed button (LOW or HIGH)
-      
-      byte* anAccelerometerAxisPins;        // The pin to wich the X-axis of the accelerometer is connected
-      byte nAccelerometerAxisCount;         // The pin to wich the Y-axis of the accelerometer is connected
-      int* anAccelerometerCalibrationData;  // The calibration data for the accellerometer
-      };
-
   protected:
     gamepad_descriptor_t* m_pstDescriptor;  // The descriptor for the gamepad
 
